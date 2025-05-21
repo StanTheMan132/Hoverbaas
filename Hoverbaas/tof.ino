@@ -25,7 +25,7 @@ void setup_tof(){
   digitalWrite(XSHUT1, HIGH);
   delay(10);
   if (!lox1.begin()) {
-    Serial.println(F("Sensor 1 niet gevonden!"));
+    // Serial.println(F("Sensor 1 niet gevonden!"));
     while (1);
   }
   lox1.setAddress(0x30);  // Nieuw adres
@@ -34,7 +34,7 @@ void setup_tof(){
   digitalWrite(XSHUT2, HIGH);
   delay(10);
   if (!lox2.begin()) {
-    Serial.println(F("Sensor 2 niet gevonden!"));
+    // Serial.println(F("Sensor 2 niet gevonden!"));
     while (1);
   }
   lox2.setAddress(0x31);  // Nieuw adres
@@ -43,10 +43,10 @@ void setup_tof(){
   digitalWrite(XSHUT3, HIGH);
   delay(10);
   if (!lox3.begin()) {
-    Serial.println(F("Sensor 3 niet gevonden!"));
+    // Serial.println(F("Sensor 3 niet gevonden!"));
     while (1);
   }
   lox3.setAddress(0x32);  // Nieuw adres
 
-  Serial.println("Alle VL53L0X sensoren zijn opgestart en hebben unieke I2C-adressen.");
+  // Serial.println("Alle VL53L0X sensoren zijn opgestart en hebben unieke I2C-adressen.");
 }

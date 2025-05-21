@@ -1,3 +1,7 @@
+#define maxon1_pin 1
+#define maxon2_pin 2
+#define dc_motor_pin 3
+
 struct {
   //4 bytes
   int stateNr = 5;
@@ -23,23 +27,28 @@ struct {
 } set_state;
 
 char recievedChar;
-bool motors_enabled = false;
+bool blowers_enabled = false;
 
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  // setup_tof();
+  setup_tof();
   pinMode(52, OUTPUT);
 
   
 }
+
 void update_state(){
-  
+
 }
 
 void update_hardware(){
-  digitalWrite(52, motors_enabled);
+  digitalWrite(52, blowers_enabled);
+
+  analogWrite(maxon1_pin, berekenPWM("maxon1", set_state.set_motor_one_force));
+  analogWrite(maxon2_pin, berekenPWM("maxon1", set_state.set_motor_two_force));
+  analogWrite(dc_motor_pin, berekenPWM("DC", set_state.set_motor_middle_force));
 }
 
 void update_dashboard(){
@@ -82,38 +91,35 @@ void loop() {
   update_state();
   update_dashboard();
   update_hardware();
-    switch(state.stateNr){
-    case 0:
-    //start-up
-    break;
-    case 1:
-    //stand-by
-    motors_enabled = false;
 
-    break;
-    case 18:
-    //afmeren tof
-    motors_enabled = true;
-
-    break;
-    case 19:
-    //parallel tof
-    break;
-    case 20: 
-    //parallel gyro
-    break;
-    case 21:
-    //vooruit
-    break;
-    case 22:
-    //stoppen
-    break;
-    case 23:
-    //90 graden rotatie
-    break;
-    case 24:
-    //rpi
-    break;
+  switch(state.stateNr){
+  case 0:
+  //start-up
+  break;
+  case 1:
+  //stand-by
+  break;
+  case 18:
+  //afmeren tof
+  break;
+  case 19:
+  //parallel tof
+  break;
+  case 20: 
+  //parallel gyro
+  break;
+  case 21:
+  //vooruit
+  break;
+  case 22:
+  //stoppen
+  break;
+  case 23:
+  //90 graden rotatie
+  break;
+  case 24:
+  //rpi
+  break;
 
   }
 

@@ -101,6 +101,7 @@ void loop() {
   break;
   case 18:
   //afmeren tof
+  regelaar18();
   break;
   case 19:
   //parallel tof

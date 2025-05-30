@@ -1,13 +1,5 @@
-#include "Adafruit_VL53L0X.h"
 #include <math.h>
 
-#define XSHUT1 47
-#define XSHUT2 48
-#define XSHUT3 49
-
-Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
-Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
-Adafruit_VL53L0X lox3 = Adafruit_VL53L0X();
 
 
 void setup_tof(){
@@ -25,7 +17,7 @@ void setup_tof(){
   digitalWrite(XSHUT1, HIGH);
   delay(10);
   if (!lox1.begin()) {
-    // Serial.println(F("Sensor 1 niet gevonden!"));
+    Serial.println(F("Sensor 1 niet gevonden!"));
     while (1);
   }
   lox1.setAddress(0x30);  // Nieuw adres
@@ -34,7 +26,7 @@ void setup_tof(){
   digitalWrite(XSHUT2, HIGH);
   delay(10);
   if (!lox2.begin()) {
-    // Serial.println(F("Sensor 2 niet gevonden!"));
+    Serial.println(F("Sensor 2 niet gevonden!"));
     while (1);
   }
   lox2.setAddress(0x31);  // Nieuw adres
@@ -43,7 +35,7 @@ void setup_tof(){
   digitalWrite(XSHUT3, HIGH);
   delay(10);
   if (!lox3.begin()) {
-    // Serial.println(F("Sensor 3 niet gevonden!"));
+    Serial.println(F("Sensor 3 niet gevonden!"));
     while (1);
   }
   lox3.setAddress(0x32);  // Nieuw adres

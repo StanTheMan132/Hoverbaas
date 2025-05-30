@@ -45,7 +45,6 @@ int berekenPWM(String motorNaam, float krachtN) {
 
   // Bereken PWM waarde uit de formule: PWM = a * kracht + b
   int pwm = (int)(a * absKracht + b);
-
   // Constrain PWM tot max waarde afhankelijk van motor:
   // Max 255 voor Maxon motoren, max 130 voor DC motor
   if (motorNaam == "DC1") {

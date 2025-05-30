@@ -1,53 +1,91 @@
-#define maxon1_pin 1
-#define maxon2_pin 2
-#define dc_motor_pin 3
+#include "Adafruit_VL53L0X.h"
+
+
+#define maxon1_pin 11
+#define maxon2_pin 9
+#define dc_motor_pin 5
+
+#define XSHUT1 47
+#define XSHUT2 48
+#define XSHUT3 49
+
+Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
+Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
+Adafruit_VL53L0X lox3 = Adafruit_VL53L0X();
+
 
 struct {
   //4 bytes
-  int stateNr = 5;
+  int stateNr = 0;
   //4 bytes
   float gyroDir;
-  float tof_front;
-  float tof_right_front;
-  float tof_right_back;
   float motor_one_force;
   float motor_two_force;
   float motor_middle_force;
   float current;
+  // 2 bytes
+  uint16_t tof_front;
+  uint16_t tof_right_front;
+  uint16_t tof_right_back;
   //1 byte
   bool blowers;
 } state;
 
 struct {
   int stateNr;
-  float set_motor_one_force;
-  float set_motor_two_force;
+  float set_motor_one_force = 0.6;
+  float set_motor_two_force = 0.6;
   float set_motor_middle_force;
   bool set_blowers;
 } set_state;
 
 char recievedChar;
-bool blowers_enabled = false;
+uint32_t prevSerial;
 
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
+  // Serial.println("Starting");
   setup_tof();
-  pinMode(52, OUTPUT);
+  // Serial.println("Done TOF");
+  pinMode(2, OUTPUT);
+  pinMode(maxon1_pin, OUTPUT);
+  pinMode(maxon2_pin, OUTPUT);
+  // pinMode(dc_motor_pin, OUTPUT);
+  pinMode(6, OUTPUT);
 
   
 }
 
 void update_state(){
+  lox1.startRangeContinuous();
+  lox2.startRangeContinuous();
+  lox3.startRangeContinuous();
+  state.motor_one_force = set_state.set_motor_one_force;
+  state.motor_two_force = set_state.set_motor_two_force;
+  state.current = 0;
+  state.blowers = set_state.set_blowers;
+  while(!lox1.isRangeComplete()) {
+    delay(1);
+  }
+  state.tof_right_back = lox1.readRange();
+  while(!lox2.isRangeComplete()) {
+    delay(1);
+  }
+  state.tof_front = lox2.readRange();
+  while(!lox3.isRangeComplete()) {
+    delay(1);
+  }
+  state.tof_right_front = lox3.readRange();
 
 }
 
 void update_hardware(){
-  digitalWrite(52, blowers_enabled);
+  digitalWrite(2, set_state.set_blowers);
 
-  analogWrite(maxon1_pin, berekenPWM("maxon1", set_state.set_motor_one_force));
-  analogWrite(maxon2_pin, berekenPWM("maxon1", set_state.set_motor_two_force));
+  analogWrite(maxon1_pin, 255 - berekenPWM("Maxon1", set_state.set_motor_one_force));
+  analogWrite(maxon2_pin, 255 - berekenPWM("Maxon2", set_state.set_motor_two_force));
   analogWrite(dc_motor_pin, berekenPWM("DC", set_state.set_motor_middle_force));
 }
 
@@ -80,16 +118,20 @@ void update_dashboard(){
       state.stateNr=24;
     }
   }
-  if (millis() % 300 == 0){
+  if (millis() - prevSerial > 100){
     Serial.write(0xAA);
     Serial.write((uint8_t *)&state, sizeof(state));
+    prevSerial = millis();
   }
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  // Serial.println("UPDATING STATE");
   update_state();
+  // Serial.println("UPDATING dashboard");
   update_dashboard();
+  // Serial.println("UPDATING hardware");
   update_hardware();
 
   switch(state.stateNr){
@@ -98,16 +140,23 @@ void loop() {
   break;
   case 1:
   //stand-by
+  set_state.set_motor_one_force = 0.0;
+  set_state.set_motor_two_force = 0.0;
   break;
   case 18:
   //afmeren tof
   regelaar18();
+  set_state.set_motor_one_force = 0.6;
+  set_state.set_motor_two_force = 0.6;
   break;
   case 19:
   //parallel tof
+  set_state.set_blowers = 1;
   break;
   case 20: 
   //parallel gyro
+  set_state.set_blowers = 0;
+  // digitalWrite(2, 0);
   break;
   case 21:
   //vooruit

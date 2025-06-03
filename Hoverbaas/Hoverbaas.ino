@@ -9,6 +9,10 @@
 #define XSHUT2 48
 #define XSHUT3 49
 
+#define INT_DIEPONTLADING 2
+#define RELAIS_BLOWERS    3
+#define RELAIS_SDC        4
+
 Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
 Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
 Adafruit_VL53L0X lox3 = Adafruit_VL53L0X();
@@ -49,13 +53,22 @@ void setup() {
   // Serial.println("Starting");
   setup_tof();
   // Serial.println("Done TOF");
-  pinMode(2, OUTPUT);
   pinMode(maxon1_pin, OUTPUT);
   pinMode(maxon2_pin, OUTPUT);
   // pinMode(dc_motor_pin, OUTPUT);
   pinMode(6, OUTPUT);
 
-  
+  attachInterrupt(digitalPinToInterrupt(INT_DIEPONTLADING), diepontladingInterrupt, FALLING);
+  pinMode(RELAIS_BLOWERS, OUTPUT);
+  pinMode(RELAIS_SDC, OUTPUT);
+  digitalWrite(RELAIS_BLOWERS, HIGH);
+  digitalWrite(RELAIS_SDC, HIGH);
+}
+
+void diepontladingInterrupt() {
+  //Serial.println("Celspanning < 3V: relais worden uitgeschakeld.");
+  digitalWrite(RELAIS_BLOWERS, LOW);
+  digitalWrite(RELAIS_SDC, LOW);
 }
 
 void update_state(){
@@ -82,7 +95,7 @@ void update_state(){
 }
 
 void update_hardware(){
-  digitalWrite(2, set_state.set_blowers);
+  digitalWrite(RELAIS_BLOWERS, set_state.set_blowers);
 
   analogWrite(maxon1_pin, 255 - berekenPWM("Maxon1", set_state.set_motor_one_force));
   analogWrite(maxon2_pin, 255 - berekenPWM("Maxon2", set_state.set_motor_two_force));

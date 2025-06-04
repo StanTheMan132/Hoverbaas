@@ -1,5 +1,7 @@
 #include "Adafruit_VL53L0X.h"
-
+#include <Wire.h>
+#include <MPU9250_asukiaaa.h>
+ 
 
 #define maxon1_pin 11
 #define maxon2_pin 9
@@ -12,6 +14,8 @@
 Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
 Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
 Adafruit_VL53L0X lox3 = Adafruit_VL53L0X();
+
+MPU9250_asukiaaa gyroSensor;
 
 
 struct {
@@ -48,6 +52,7 @@ void setup() {
   Serial.begin(115200);
   // Serial.println("Starting");
   setup_tof();
+  setup_gyro();
   // Serial.println("Done TOF");
   pinMode(2, OUTPUT);
   pinMode(maxon1_pin, OUTPUT);
@@ -62,6 +67,8 @@ void update_state(){
   lox1.startRangeContinuous();
   lox2.startRangeContinuous();
   lox3.startRangeContinuous();
+  mySensor.gyroUpdate();
+  state.gyroDir = mySensor.gyroZ(); // in deg/s
   state.motor_one_force = set_state.set_motor_one_force;
   state.motor_two_force = set_state.set_motor_two_force;
   state.current = 0;

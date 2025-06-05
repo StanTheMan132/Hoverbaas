@@ -26,7 +26,7 @@ void regelaar23::step(float theta, float setpoint, float dt, float& m1_force, fl
         this->error_sum += error_new * dt;
     }
     // Anti integrator-windup for m2
-    if (m2 < ((this->basis_kracht + this    ->max_krachtverschil) / 2.0)) {
+    if (m2 < ((this->basis_kracht + this->max_krachtverschil) / 2.0)) {
         this->error_sum += error_new * dt;
     }
 

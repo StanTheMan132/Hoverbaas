@@ -43,13 +43,17 @@ struct {
   int stateNr;
   float set_motor_one_force = 0.0;
   float set_motor_two_force = 0.0;
-  float set_motor_middle_force;
+  float set_motor_middle_force = 0.0;
   bool set_blowers;
 } set_state;
 
 char recievedChar;
 uint32_t prevSerial;
+float t_oud;
 
+float nu;
+float vorige_meting;
+float dt;
 
 void setup() {
   // put your setup code here, to run once:
@@ -60,8 +64,11 @@ void setup() {
   // Serial.println("Done TOF");
   pinMode(maxon1_pin, OUTPUT);
   pinMode(maxon2_pin, OUTPUT);
-  // pinMode(dc_motor_pin, OUTPUT);
+  pinMode(dc_motor_pin, OUTPUT);
   pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(10, OUTPUT);
   
   t_oud = millis();
 
@@ -87,6 +94,7 @@ void update_state(){
   Serial.println(state.gyroDir);
   state.motor_one_force = set_state.set_motor_one_force;
   state.motor_two_force = set_state.set_motor_two_force;
+  state.motor_middle_force = set_state.set_motor_middle_force;
   state.current = 0;
   state.blowers = set_state.set_blowers;
   while(!lox1.isRangeComplete()) {
@@ -106,15 +114,45 @@ void update_state(){
 
 void update_hardware(){
   digitalWrite(RELAIS_BLOWERS, set_state.set_blowers);
+  if(set_state.set_motor_one_force > 0) {
+    digitalWrite(8, LOW);
+  } else {
+    digitalWrite(8, HIGH);
+  }
+    if(set_state.set_motor_two_force > 0) {
+      digitalWrite(10, LOW);
+  } else {
+      digitalWrite(10, HIGH);
+  }
+
 
   analogWrite(maxon1_pin, 255 - berekenPWM("Maxon1", set_state.set_motor_one_force));
   analogWrite(maxon2_pin, 255 - berekenPWM("Maxon2", set_state.set_motor_two_force));
-  analogWrite(dc_motor_pin, berekenPWM("DC", set_state.set_motor_middle_force));
+
+  if(set_state.set_motor_middle_force > 0){
+      digitalWrite(6, LOW);
+      digitalWrite(7, HIGH);
+  } else if (set_state.set_motor_middle_force < 0){
+      digitalWrite(6, HIGH);
+      digitalWrite(7, LOW);
+  } else {
+    digitalWrite(6, LOW);
+    digitalWrite(7, LOW);
+  }
+
+  analogWrite(dc_motor_pin, berekenPWM("DC1", set_state.set_motor_middle_force));
+  //analogWrite(dc_motor_pin, 100);
+}
+void reset_hardware(){
+  set_state.set_motor_one_force = 0;
+  set_state.set_motor_two_force = 0;
+  set_state.set_motor_middle_force = 0;
 }
 
 void update_dashboard(){
   if(Serial.available() > 0){
     recievedChar = Serial.read();
+    reset_hardware();
     switch(recievedChar){
       case '1':
       state.stateNr = 1;
@@ -149,6 +187,8 @@ void update_dashboard(){
 }
 
 void loop() {
+  nu = millis();
+  dt = nu - vorige_meting;
   // put your main code here, to run repeatedly:
   // Serial.println("UPDATING STATE");
   update_state();
@@ -172,12 +212,14 @@ void loop() {
   case 18:
   //afmeren tof
   regelaar18();
-  set_state.set_motor_one_force = 0.6;
-  set_state.set_motor_two_force = 0.6;
+  // set_state.set_motor_middle_force = 0.8;
+  // set_state.set_motor_one_force = 0.6;
+  // set_state.set_motor_two_force = 0.6;
   break;
   case 19:
   //parallel tof
-  set_state.set_blowers = 1;
+  regelaar19();
+  
   break;
   case 20: 
   //parallel gyro
@@ -185,6 +227,7 @@ void loop() {
   // digitalWrite(2, 0);
   break;
   case 21:
+  set_state.set_blowers = 1;
   //vooruit
   break;
   case 22:
@@ -200,5 +243,5 @@ void loop() {
   break;
 
   }
-
+  vorige_meting = nu;
 }

@@ -200,7 +200,7 @@ void loop() {
 
   // preparatie regelaar 23
   float r23_setpoint = state.gyroDir + 3.14159265358979323846/2; // 90 graden rotatie, in radianen
-  regelaar23 r23(3, 2, 0.1);
+  // regelaar23 r23(3, 2, 0.1);
 
   switch(state.stateNr){
   case 0:
@@ -239,7 +239,7 @@ void loop() {
   //90 graden rotatie
     set_state.set_motor_middle_force = 0.0;
     float dt = 0.01; //TODO ergens vandaan halen 
-    r23.step(r23_setpoint, 90/180*3.14, dt, set_state.set_motor_one_force, set_state.set_motor_two_force);
+    // r23.step(r23_setpoint, 90/180*3.14, dt, set_state.set_motor_one_force, set_state.set_motor_two_force);
   break;
   case 24:
   //rpi

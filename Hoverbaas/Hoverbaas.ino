@@ -55,6 +55,9 @@ float nu;
 float vorige_meting;
 float dt;
 
+float error = 0.0;
+float error_oud = 0.0;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);

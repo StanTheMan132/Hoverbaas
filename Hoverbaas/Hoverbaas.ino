@@ -193,6 +193,7 @@ void loop() {
   break;
   case 23:
   //90 graden rotatie
+    set_state.set_motor_middle_force = 0.0;
     float dt = 0.01 //TODO ergens vandaan halen 
     r23.step(r23_setpoint, 90/180*3.14, dt, set_state.set_motor_one_force, set_state.set_motor_two_force);
   break;

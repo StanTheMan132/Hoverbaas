@@ -157,7 +157,8 @@ void loop() {
   // Serial.println("UPDATING hardware");
   update_hardware();
 
-
+  // preparatie regelaar 23
+  float r23_setpoint = state.gyroDir + 3.14159265358979323846;
   r23 regelaar23(3, 2, 0.1);
 
   switch(state.stateNr){
@@ -191,10 +192,9 @@ void loop() {
   //stoppen
   break;
   case 23:
-    //90 graden rotatie
-    // eenmaal gyro calibreren en op 0 zetten
+  //90 graden rotatie
     float dt = 0.01 //TODO ergens vandaan halen 
-    r23.step(state.gyroDir, 90/180*3.14, dt, set_state.set_motor_one_force, set_state.set_motor_two_force);
+    r23.step(r23_setpoint, 90/180*3.14, dt, set_state.set_motor_one_force, set_state.set_motor_two_force);
   break;
   case 24:
   //rpi

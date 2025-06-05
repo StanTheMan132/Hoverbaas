@@ -62,6 +62,8 @@ void setup() {
   pinMode(maxon2_pin, OUTPUT);
   // pinMode(dc_motor_pin, OUTPUT);
   pinMode(6, OUTPUT);
+  
+  t_oud = millis();
 
   attachInterrupt(digitalPinToInterrupt(INT_DIEPONTLADING), diepontladingInterrupt, FALLING);
   pinMode(RELAIS_BLOWERS, OUTPUT);

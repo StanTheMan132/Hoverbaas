@@ -1,7 +1,7 @@
 #include "Adafruit_VL53L0X.h"
 #include <Wire.h>
 #include <MPU9250_asukiaaa.h>
- 
+#include "regelaar23.h"
 
 #define maxon1_pin 11
 #define maxon2_pin 9
@@ -154,6 +154,9 @@ void loop() {
   // Serial.println("UPDATING hardware");
   update_hardware();
 
+
+  r23 regelaar23(3, 2, 0.1);
+
   switch(state.stateNr){
   case 0:
   //start-up
@@ -186,6 +189,8 @@ void loop() {
   break;
   case 23:
   //90 graden rotatie
+    float dt = 0.01 //TODO ergens vandaan halen 
+    r23.step(state.gyroDir, 90/180*3.14, dt, set_state.set_motor_one_force, set_state.set_motor_two_force);
   break;
   case 24:
   //rpi

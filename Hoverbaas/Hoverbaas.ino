@@ -1,7 +1,7 @@
 #include "Adafruit_VL53L0X.h"
 #include <Wire.h>
 #include <MPU9250_asukiaaa.h>
- 
+#include "regelaar23.h"
 
 #define maxon1_pin 11
 #define maxon2_pin 9
@@ -10,6 +10,10 @@
 #define XSHUT1 47
 #define XSHUT2 48
 #define XSHUT3 49
+
+#define INT_DIEPONTLADING 2
+#define RELAIS_BLOWERS    3
+#define RELAIS_SDC        4
 
 Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
 Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
@@ -54,13 +58,22 @@ void setup() {
   setup_tof();
   setup_gyro();
   // Serial.println("Done TOF");
-  pinMode(2, OUTPUT);
   pinMode(maxon1_pin, OUTPUT);
   pinMode(maxon2_pin, OUTPUT);
   // pinMode(dc_motor_pin, OUTPUT);
   pinMode(6, OUTPUT);
 
-  
+  attachInterrupt(digitalPinToInterrupt(INT_DIEPONTLADING), diepontladingInterrupt, FALLING);
+  pinMode(RELAIS_BLOWERS, OUTPUT);
+  pinMode(RELAIS_SDC, OUTPUT);
+  digitalWrite(RELAIS_BLOWERS, HIGH);
+  digitalWrite(RELAIS_SDC, HIGH);
+}
+
+void diepontladingInterrupt() {
+  //Serial.println("Celspanning < 3V: relais worden uitgeschakeld.");
+  digitalWrite(RELAIS_BLOWERS, LOW);
+  digitalWrite(RELAIS_SDC, LOW);
 }
 
 void update_state(){
@@ -90,7 +103,7 @@ void update_state(){
 }
 
 void update_hardware(){
-  digitalWrite(2, set_state.set_blowers);
+  digitalWrite(RELAIS_BLOWERS, set_state.set_blowers);
 
   analogWrite(maxon1_pin, 255 - berekenPWM("Maxon1", set_state.set_motor_one_force));
   analogWrite(maxon2_pin, 255 - berekenPWM("Maxon2", set_state.set_motor_two_force));
@@ -142,6 +155,9 @@ void loop() {
   // Serial.println("UPDATING hardware");
   update_hardware();
 
+
+  r23 regelaar23(3, 2, 0.1);
+
   switch(state.stateNr){
   case 0:
   //start-up
@@ -174,6 +190,8 @@ void loop() {
   break;
   case 23:
   //90 graden rotatie
+    float dt = 0.01 //TODO ergens vandaan halen 
+    r23.step(state.gyroDir, 90/180*3.14, dt, set_state.set_motor_one_force, set_state.set_motor_two_force);
   break;
   case 24:
   //rpi

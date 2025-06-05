@@ -1,9 +1,5 @@
-// #ifndef REGELAAR23_H
-// #define REGELAAR23_H
-
-// #include <algorithm.h>
-// #include <cmath>
-// #include <cstdint>
+#ifndef REGELAAR23_H
+#define REGELAAR23_H
 
 // // struct {
 // //   //4 bytes
@@ -42,4 +38,4 @@
 //     void step(float theta, float setpoint, float dt, float& m1_force, float& m2_force); // theta, m1 en m2 van state, m1&m2 by reference
 // };
 
-// #endif // REGELAAR23_H
+#endif // REGELAAR23_H

@@ -13,8 +13,13 @@ void regelaar23::step(float theta, float setpoint, float dt, float& m1_force, fl
 
     float m1 = error_new * this->Kp + d_error * this->Kd + this->error_sum * this->Ki;
     float m2 = (error_new * this->Kp + d_error * this->Kd + this->error_sum * this->Ki) * -1;
-    m1 = max(0.0, min(m1, static_cast<double>(this->basis_kracht + this->max_krachtverschil)));
-    m2 = max(0.0, min(m2, static_cast<double>(this->basis_kracht + this->max_krachtverschil)));
+    
+    // nieuw
+    m1 = constrain(m1, -0.6, 0.6);
+    m2 = constrain(m2, -0.6, 0.6);
+    // oud
+    // m1 = max(0.0, min(m1, static_cast<double>(this->basis_kracht + this->max_krachtverschil)));
+    // m2 = max(0.0, min(m2, static_cast<double>(this->basis_kracht + this->max_krachtverschil)));
 
     // Anti integrator-windup for m1
     if (m1 < ((this->basis_kracht + this->max_krachtverschil) / 2.0)) {

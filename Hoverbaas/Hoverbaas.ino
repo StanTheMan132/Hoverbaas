@@ -41,8 +41,8 @@ struct {
 
 struct {
   int stateNr;
-  float set_motor_one_force = 0.6;
-  float set_motor_two_force = 0.6;
+  float set_motor_one_force = 0.0;
+  float set_motor_two_force = 0.0;
   float set_motor_middle_force;
   bool set_blowers;
 } set_state;
@@ -62,6 +62,8 @@ void setup() {
   pinMode(maxon2_pin, OUTPUT);
   // pinMode(dc_motor_pin, OUTPUT);
   pinMode(6, OUTPUT);
+  
+  t_oud = millis();
 
   attachInterrupt(digitalPinToInterrupt(INT_DIEPONTLADING), diepontladingInterrupt, FALLING);
   pinMode(RELAIS_BLOWERS, OUTPUT);
@@ -80,8 +82,9 @@ void update_state(){
   lox1.startRangeContinuous();
   lox2.startRangeContinuous();
   lox3.startRangeContinuous();
-  mySensor.gyroUpdate();
-  state.gyroDir = mySensor.gyroZ(); // in deg/s
+  gyroSensor.gyroUpdate();
+  state.gyroDir = gyroSensor.gyroZ(); // in deg/s
+  Serial.println(state.gyroDir);
   state.motor_one_force = set_state.set_motor_one_force;
   state.motor_two_force = set_state.set_motor_two_force;
   state.current = 0;

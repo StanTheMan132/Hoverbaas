@@ -1,10 +1,6 @@
 #ifndef REGELAAR23_H
 #define REGELAAR23_H
 
-#include <algorithm>
-#include <cmath>
-#include <cstdint>
-
 // struct {
 //   //4 bytes
 //   int stateNr = 0;

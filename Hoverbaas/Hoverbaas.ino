@@ -191,7 +191,8 @@ void loop() {
   //stoppen
   break;
   case 23:
-  //90 graden rotatie
+    //90 graden rotatie
+    // eenmaal gyro calibreren en op 0 zetten
     float dt = 0.01 //TODO ergens vandaan halen 
     r23.step(state.gyroDir, 90/180*3.14, dt, set_state.set_motor_one_force, set_state.set_motor_two_force);
   break;

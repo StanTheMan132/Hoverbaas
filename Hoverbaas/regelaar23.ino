@@ -1,10 +1,10 @@
 #include "regelaar23.h"
 
-regelaar::regelaar(double Kp, double Kd, double Ki)
-    : Kp(Kp), Kd(Kd), Ki(Ki), error_last(0.0), error_sum(0.0), basis_kracht(0.3), max_krachtverschil(0.3) {}
+// regelaar::regelaar(double Kp, double Kd, double Ki)
+//     : Kp(Kp), Kd(Kd), Ki(Ki), error_last(0.0), error_sum(0.0), basis_kracht(0.3), max_krachtverschil(0.3) {}
 
-regelaar23::regelaar23(double Kp, double Kd, double Ki)
-    : regelaar(Kp, Kd, Ki) {}
+// regelaar23::regelaar23(double Kp, double Kd, double Ki)
+//     : regelaar(Kp, Kd, Ki) {}
 
 void regelaar23::step(float theta, float setpoint, float dt, float& m1_force, float& m2_force) { // theta, m1 en m2  van state, m1&m2 by reference
     double pi = 3.14159265358979323846; // TODO ergens anders definiëren
@@ -30,11 +30,11 @@ void regelaar23::step(float theta, float setpoint, float dt, float& m1_force, fl
         this->error_sum += error_new * dt;
     }
 
-    // oude anti-windup
-    // if (!(m1 >= (this->basis_kracht + this->max_krachtverschil))) { // anti integrator-windup
-    //     this->error_sum += error_new * dt;
-    // }
-    // this->error_last = error_new;
+//     // oude anti-windup
+//     // if (!(m1 >= (this->basis_kracht + this->max_krachtverschil))) { // anti integrator-windup
+//     //     this->error_sum += error_new * dt;
+//     // }
+//     // this->error_last = error_new;
 
     m1_force = m1;
     m2_force = m2;

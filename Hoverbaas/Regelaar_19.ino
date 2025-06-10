@@ -1,14 +1,17 @@
 void regelaar19() {
-  const float Kp = 0.8, Ki = 0.0, Kd = 1.5;
+  const float Kp = 0.4, Ki = 0.0, Kd = 1.5;
 
   // static float fout_integratie = 0;
   static float vorige_fout = 0;
 
 
+  
+  // float fout = (state.tof_right_back - state.tof_right_front) / 20.0;
+  float fout = (static_cast<int>(state.tof_right_back) - static_cast<int>(state.tof_right_front)) / 20.0;
 
-  float fout = (state.tof_right_back - state.tof_right_front) / 20;
+  fout = (fout / 180.0) * 2.0 * 3.1415;
   // fout_integratie += fout * dt;
-  // float fout_afgeleide = (fout - vorige_fout) / dt;
+  float fout_afgeleide = (fout - vorige_fout) / dt;
   vorige_fout = fout;
 
   // float delta = Kp * fout + Ki * fout_integratie + Kd * fout_afgeleide;

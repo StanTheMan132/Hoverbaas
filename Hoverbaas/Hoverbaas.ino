@@ -21,6 +21,9 @@ Adafruit_VL53L0X lox3 = Adafruit_VL53L0X();
 
 MPU9250_asukiaaa gyroSensor;
 
+// preparatie regelaar 23
+float r23_setpoint = 0.0;
+regelaar23 r23(3, 2, 0.1);
 
 struct {
   //4 bytes
@@ -200,10 +203,6 @@ void loop() {
   // Serial.println("UPDATING hardware");
   update_hardware();
 
-  // preparatie regelaar 23
-  float r23_setpoint = state.gyroDir + 3.14159265358979323846/2; // 90 graden rotatie, in radianen
-  regelaar23 r23(3, 2, 0.1);
-
   switch(state.stateNr){
   case 0:
   //start-up
@@ -238,10 +237,11 @@ void loop() {
   //stoppen
   break;
   case 23:
-  //90 graden rotatie
+    //90 graden rotatie
+    // TODO calibratie gyro, setpoint gaat er nu van uit dat de gyro op 0 staat bij start regelaar
+    float r23_setpoint =  3.14159265358979323846/2; // 90 graden rotatie in radialen als setpoint voor regelaar
     set_state.set_motor_middle_force = 0.0;
-    float dt = 0.01; //TODO ergens vandaan halen 
-    r23.step(r23_setpoint, 90/180*3.14, dt, set_state.set_motor_one_force, set_state.set_motor_two_force);
+    r23.step((state.gyroDir/180)*3.14159265358979323846, r23_setpoint, dt, set_state.set_motor_one_force, set_state.set_motor_two_force);
   break;
   case 24:
   //rpi

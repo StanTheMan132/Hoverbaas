@@ -1,5 +1,5 @@
 void regelaar19() {
-  const float Kp = 0.4, Ki = 0.0, Kd = 1.5;
+  const float Kp = 0.5, Ki = 0.0, Kd = 0.6;
 
   // static float fout_integratie = 0;
   static float vorige_fout = 0;
@@ -15,13 +15,16 @@ void regelaar19() {
   vorige_fout = fout;
 
   // float delta = Kp * fout + Ki * fout_integratie + Kd * fout_afgeleide;
-  float delta = Kp * fout;
+  float delta = Kp * fout + Kd * fout_afgeleide;
 
   delta = constrain(delta, -0.5, 0.5);
 
   float base = 0.0;
+
   set_state.set_motor_one_force = base + delta;
   set_state.set_motor_two_force = base - delta;
+
+
 
 }
 

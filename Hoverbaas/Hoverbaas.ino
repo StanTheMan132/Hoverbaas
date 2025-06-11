@@ -192,7 +192,15 @@ void update_dashboard(){
 
 void loop() {
   nu = millis();
-  dt = (nu - vorige_meting) / 1e6;
+  dt = (nu - vorige_meting);
+
+  if (dt < 100) {
+  
+    return;
+  }
+
+  dt = dt / 1e3;
+
   // put your main code here, to run repeatedly:
   // Serial.println("UPDATING STATE");
   update_state();
@@ -236,6 +244,7 @@ void loop() {
   //vooruit
   break;
   case 22:
+  regelaar22();
   //stoppen
   break;
   case 23:

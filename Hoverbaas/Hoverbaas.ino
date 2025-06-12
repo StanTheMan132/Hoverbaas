@@ -1,7 +1,7 @@
 #include "Adafruit_VL53L0X.h"
 #include <Wire.h>
 #include <MPU9250_asukiaaa.h>
-// #include "regelaar23.h"
+#include "regelaar23.h"
 
 #define maxon1_pin 11
 #define maxon2_pin 9
@@ -76,7 +76,7 @@ void setup() {
   
   t_oud = millis();
 
-  attachInterrupt(digitalPinToInterrupt(INT_DIEPONTLADING), diepontladingInterrupt, FALLING);
+  attachInterrupt(digitalPinToInterrupt(INT_DIEPONTLADING), diepontladingInterrupt, RISING);
   pinMode(RELAIS_BLOWERS, OUTPUT);
   pinMode(RELAIS_SDC, OUTPUT);
   digitalWrite(RELAIS_BLOWERS, HIGH);
@@ -94,7 +94,11 @@ void update_state(){
   lox2.startRangeContinuous();
   lox3.startRangeContinuous();
   gyroSensor.gyroUpdate();
-  state.gyroDir += gyroSensor.gyroZ() * dt; // in deg/s
+  float dir = gyroSensor.gyroZ();
+  // Serial.print("Dir: ");
+  // Serial.println(dir);
+  state.gyroDir += dir  * dt; // in deg/s
+  // Serial.println(state.gyroDir);
   state.motor_one_force = set_state.set_motor_one_force;
   state.motor_two_force = set_state.set_motor_two_force;
   state.motor_middle_force = set_state.set_motor_middle_force;
@@ -181,6 +185,7 @@ void update_dashboard(){
       break;
       case '7':
       state.stateNr = 23;
+      state.gyroDir = 0.0;
       break;
       case '8':
       state.stateNr=24;

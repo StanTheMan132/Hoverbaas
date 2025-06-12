@@ -94,8 +94,7 @@ void update_state(){
   lox2.startRangeContinuous();
   lox3.startRangeContinuous();
   gyroSensor.gyroUpdate();
-  state.gyroDir = gyroSensor.gyroZ(); // in deg/s
-  Serial.println(state.gyroDir);
+  state.gyroDir += gyroSensor.gyroZ() * dt; // in deg/s
   state.motor_one_force = set_state.set_motor_one_force;
   state.motor_two_force = set_state.set_motor_two_force;
   state.motor_middle_force = set_state.set_motor_middle_force;
@@ -131,6 +130,10 @@ void update_hardware(){
 
 
   analogWrite(maxon1_pin, 255 - berekenPWM("Maxon1", set_state.set_motor_one_force));
+  // analogWrite(maxon1_pin, 0);
+
+  // Serial.print("PWM: ");
+  // Serial.println(255 - berekenPWM("Maxonf1", set_state.set_motor_one_force));
   analogWrite(maxon2_pin, 255 - berekenPWM("Maxon2", set_state.set_motor_two_force));
 
   if(set_state.set_motor_middle_force > 0){
@@ -192,7 +195,15 @@ void update_dashboard(){
 
 void loop() {
   nu = millis();
-  dt = nu - vorige_meting;
+  dt = (nu - vorige_meting);
+
+  if (dt < 100) {
+  
+    return;
+  }
+
+  dt = dt / 1e3;
+
   // put your main code here, to run repeatedly:
   // Serial.println("UPDATING STATE");
   update_state();
@@ -200,6 +211,10 @@ void loop() {
   update_dashboard();
   // Serial.println("UPDATING hardware");
   update_hardware();
+
+  // preparatie regelaar 23
+  float r23_setpoint = state.gyroDir + 3.14159265358979323846/2; // 90 graden rotatie, in radianen
+  // regelaar23 r23(3, 2, 0.1);
 
   switch(state.stateNr){
   case 0:
@@ -232,6 +247,7 @@ void loop() {
   //vooruit
   break;
   case 22:
+  regelaar22();
   //stoppen
   break;
   case 23:
